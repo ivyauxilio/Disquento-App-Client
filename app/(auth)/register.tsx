@@ -73,7 +73,7 @@ export default function RegisterScreen() {
     if (validate()) {
       const result = await dispatch(registerUser(formData));
       if (registerUser.fulfilled.match(result)) {
-        router.replace("/(tabs)/dashboard");
+        router.replace("/");
       }
     }
   };
