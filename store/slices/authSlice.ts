@@ -4,6 +4,7 @@ import api from "../../api/axios";
 
 export interface User {
   id: number;
+  uuid: number;
   firstname: string;
   lastname: string;
   email: string;
