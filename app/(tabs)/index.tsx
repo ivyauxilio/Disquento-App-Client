@@ -7,7 +7,6 @@ import {
   FlatList,
   Image,
   RefreshControl,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,6 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import api from "../../api/axios";
 import { useAppSelector } from "../../store/hooks";
 import { colors } from "../../theme/colors";
@@ -429,7 +429,7 @@ export default function ClientDashboard() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={

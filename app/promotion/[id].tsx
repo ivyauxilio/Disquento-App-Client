@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  SafeAreaView,
   ScrollView,
   Share,
   StyleSheet,
@@ -15,6 +14,7 @@ import {
   View,
 } from "react-native";
 import QRCode from "react-native-qrcode-svg";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { default as api } from "../../api/axios";
 import { useAppSelector } from "../../store/hooks";
 import { colors } from "../../theme/colors";
@@ -136,7 +136,7 @@ export default function PromotionDetailScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.errorContainer}>
+      <SafeAreaView style={styles.errorContainer} edges={["top"]}>
         <View style={styles.errorContent}>
           <Text style={styles.errorIcon}>😕</Text>
           <Text style={styles.errorTitle}>Something went wrong</Text>
