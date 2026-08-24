@@ -1,14 +1,14 @@
-import { Tabs } from "expo-router";
-import React from "react";
-
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { Tabs } from "expo-router";
+import React from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { colors } from "../../theme/colors";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  const insets = useSafeAreaInsets();
   return (
     <Tabs
       screenOptions={{
@@ -18,9 +18,9 @@ export default function TabLayout() {
         // headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          paddingBottom: 8,
+          height: 65 + insets.bottom,
+          paddingBottom: insets.bottom + 5,
           paddingTop: 8,
-          height: 64,
         },
         headerStyle: {
           backgroundColor: colors.white,
@@ -46,7 +46,7 @@ export default function TabLayout() {
         options={{
           title: "Card",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <IconSymbol size={28} name="creditcard.fill" color={color} />
           ),
         }}
       />

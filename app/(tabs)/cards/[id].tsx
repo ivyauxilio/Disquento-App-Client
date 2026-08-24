@@ -25,7 +25,7 @@ export default function CardDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const { token } = useAppSelector((state) => state.auth);
-  const [card, setCard] = useState<any>(null);
+  const [cardDetails, setCardDetails] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [showQR, setShowQR] = useState(false);
@@ -40,7 +40,7 @@ export default function CardDetailScreen() {
       const response = await api.get(`/client/cards/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCard(response.data.data);
+      setCardDetails(response.data.data);
       setTransactions(response.data.transactions || []);
     } catch (error) {
       console.error("Error fetching card details:", error);
@@ -58,8 +58,8 @@ export default function CardDetailScreen() {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: `My Disquento Card: ${card?.card_number}`,
-        title: "Disquento Card",
+        message: `My Card Number: ${cardDetails.card?.full_card_number}`,
+        title: "KlickCard",
       });
     } catch (error) {
       console.error("Share error:", error);
@@ -84,7 +84,7 @@ export default function CardDetailScreen() {
     );
   }
 
-  if (!card) {
+  if (!cardDetails.card) {
     return (
       <SafeAreaView style={styles.container} edges={["top"]}>
         <View style={styles.errorContainer}>
@@ -128,32 +128,38 @@ export default function CardDetailScreen() {
             ]}
           >
             <View style={styles.cardHeader}>
-              <Text style={styles.cardBrand}>DISQUENTO</Text>
+              <Text style={styles.cardBrand}>KlickCard</Text>
               <View style={styles.cardStatus}>
                 <View
                   style={[
                     styles.statusDot,
-                    { backgroundColor: getStatusColorAlt(card.status) },
+                    {
+                      backgroundColor: getStatusColorAlt(
+                        cardDetails.card.status,
+                      ),
+                    },
                   ]}
                 />
                 <Text style={styles.cardStatusText}>
-                  {card.status.charAt(0).toUpperCase() + card.status.slice(1)}
+                  {cardDetails.card.status}
                 </Text>
               </View>
             </View>
 
             <Text style={styles.cardNumber}>
-              {card.card_number.replace(/(.{4})/g, "$1 ")}
+              {cardDetails.card.card_number}
             </Text>
 
             <View style={styles.cardFooter}>
               <View>
                 <Text style={styles.cardLabel}>Balance</Text>
-                <Text style={styles.cardValue}>₱{card.balance}</Text>
+                <Text style={styles.cardValue}>
+                  ₱{cardDetails.card.balance}
+                </Text>
               </View>
               <View>
                 <Text style={styles.cardLabel}>Points</Text>
-                <Text style={styles.cardValue}>{card.points}</Text>
+                <Text style={styles.cardValue}>{cardDetails.card.points}</Text>
               </View>
             </View>
           </View>
@@ -192,7 +198,7 @@ export default function CardDetailScreen() {
           <View style={styles.qrContainer}>
             <View style={styles.qrWrapper}>
               <QRCode
-                value={card.card_id}
+                value={cardDetails.card.card_qr_code}
                 size={200}
                 color="#1a1a2e"
                 backgroundColor="#fff"

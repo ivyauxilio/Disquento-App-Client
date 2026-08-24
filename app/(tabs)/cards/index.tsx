@@ -1,5 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
 import React, { ComponentProps, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -100,100 +103,109 @@ export default function CardsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>My Cards</Text>
-          {/* <Link href="/cards/activate" style={styles.addButton}>
+    <>
+      <SafeAreaProvider>
+        <StatusBar style="inverted" backgroundColor="#6C3DF5" />
+        <SafeAreaView style={styles.container} edges={["top"]}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            {/* Header */}
+            <View style={styles.header}>
+              <Text style={styles.headerTitle}>My Cards</Text>
+              {/* <Link href="/cards/activate" style={styles.addButton}>
             <Ionicons name="add-circle" size={24} color={colors.purple.main} />
             <Text style={styles.addButtonText}>Activate Card</Text>
           </Link> */}
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => router.push("/cards/activate")}
-          >
-            <Ionicons name="add-circle" size={24} color={colors.purple.main} />
-            <Text style={styles.addButtonText}>Activate Card</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Cards List */}
-        {cards.length > 0 ? (
-          cards.map((card) => (
-            <TouchableOpacity
-              key={card.card_id}
-              style={styles.cardItem}
-              onPress={() => router.push(`/cards/${card.card_id}`)}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardContent}>
-                <View style={styles.cardLeft}>
-                  <View style={styles.cardIcon}>
-                    <Ionicons
-                      name="card-outline"
-                      size={24}
-                      color={colors.purple.main}
-                    />
-                  </View>
-                  <View>
-                    <Text style={styles.cardNumber}>
-                      {card.card_number.replace(/(.{4})/g, "$1 ")}
-                    </Text>
-                    <Text style={styles.cardBalance}>
-                      ₱{card.balance.toLocaleString()} balance
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.cardRight}>
-                  <View style={styles.cardStatus}>
-                    <Ionicons
-                      name={getStatusIcon(card.status)}
-                      size={16}
-                      color={getStatusColor(card.status)}
-                    />
-                    <Text
-                      style={[
-                        styles.cardStatusText,
-                        { color: getStatusColor(card.status) },
-                      ]}
-                    >
-                      {getStatusLabel(card.status)}
-                    </Text>
-                  </View>
-                  <Text style={styles.cardPoints}>{card.points} pts</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))
-        ) : (
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIcon}>
-              <Ionicons
-                name="card-outline"
-                size={64}
-                color={colors.gray[300]}
-              />
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => router.push("/cards/activate")}
+              >
+                <Ionicons
+                  name="add-circle"
+                  size={24}
+                  color={colors.purple.main}
+                />
+                <Text style={styles.addButtonText}>Activate Card</Text>
+              </TouchableOpacity>
             </View>
-            <Text style={styles.emptyTitle}>No Cards Yet</Text>
-            <Text style={styles.emptySubtitle}>
-              Activate your first physical card to start earning rewards
-            </Text>
-            <TouchableOpacity
-              style={styles.emptyButton}
-              onPress={() => router.push("/cards/activate")}
-            >
-              <Text style={styles.emptyButtonText}>Activate Your Card</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+
+            {/* Cards List */}
+            {cards.length > 0 ? (
+              cards.map((card) => (
+                <TouchableOpacity
+                  key={card.card_id}
+                  style={styles.cardItem}
+                  onPress={() => router.push(`/cards/${card.card_id}`)}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.cardContent}>
+                    <View style={styles.cardLeft}>
+                      <View style={styles.cardIcon}>
+                        <Ionicons
+                          name="card-outline"
+                          size={24}
+                          color={colors.purple.main}
+                        />
+                      </View>
+                      <View>
+                        <Text style={styles.cardNumber}>
+                          {card.card_number.replace(/(.{4})/g, "$1 ")}
+                        </Text>
+                        <Text style={styles.cardBalance}>
+                          ₱{card.balance.toLocaleString()} balance
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.cardRight}>
+                      <View style={styles.cardStatus}>
+                        <Ionicons
+                          name={getStatusIcon(card.status)}
+                          size={16}
+                          color={getStatusColor(card.status)}
+                        />
+                        <Text
+                          style={[
+                            styles.cardStatusText,
+                            { color: getStatusColor(card.status) },
+                          ]}
+                        >
+                          {getStatusLabel(card.status)}
+                        </Text>
+                      </View>
+                      <Text style={styles.cardPoints}>{card.points} pts</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <View style={styles.emptyIcon}>
+                  <Ionicons
+                    name="card-outline"
+                    size={64}
+                    color={colors.gray[300]}
+                  />
+                </View>
+                <Text style={styles.emptyTitle}>No Cards Yet</Text>
+                <Text style={styles.emptySubtitle}>
+                  Activate your first physical card to start earning rewards
+                </Text>
+                <TouchableOpacity
+                  style={styles.emptyButton}
+                  onPress={() => router.push("/cards/activate")}
+                >
+                  <Text style={styles.emptyButtonText}>Activate Your Card</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </ScrollView>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    </>
   );
 }
 

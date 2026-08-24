@@ -31,9 +31,12 @@ export default function ActivateCardScreen() {
 
   const formatCardNumber = (text: string) => {
     // Remove all non-digits
-    const cleaned = text.replace(/\D/g, "");
-    // Format as XXXX XXXX XXXX XXXX
-    const formatted = cleaned.replace(/(.{4})/g, "$1 ").trim();
+    // const cleaned = text.replace(/\D/g, "");
+    // // Format as XXXX XXXX XXXX XXXX
+    // const formatted = cleaned.replace(/(.{4})/g, "$1 ").trim();
+    const cleaned = text.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+
+    const formatted = cleaned.match(/.{1,4}/g)?.join(" ") || "";
     return formatted;
   };
 
@@ -82,7 +85,14 @@ export default function ActivateCardScreen() {
   };
 
   const copyCardNumber = async () => {
-    await Clipboard.setStringAsync(cardDetails?.card_number || "");
+    const cardNumber = cardDetails?.card_number;
+
+    if (!cardNumber) {
+      Alert.alert("Error", "Card number is not available");
+      return;
+    }
+
+    await Clipboard.setStringAsync(cardNumber);
     Alert.alert("Copied!", "Card number copied to clipboard");
   };
 
@@ -226,7 +236,7 @@ export default function ActivateCardScreen() {
                 placeholder="XXXX XXXX XXXX XXXX"
                 value={cardNumber}
                 onChangeText={handleCardNumberChange}
-                keyboardType="numeric"
+                keyboardType="default"
                 maxLength={19}
                 autoFocus
                 editable={!loading}

@@ -1,5 +1,6 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -430,6 +431,7 @@ export default function ClientDashboard() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
+      <StatusBar style="inverted" backgroundColor="#6C3DF5" />
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
