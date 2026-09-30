@@ -14,7 +14,8 @@ const getBaseUrl = (): string => {
   // For Physical Device: http://192.168.1.100:8000
   return (
     process.env.EXPO_PUBLIC_API_URL?.replace("/api", "") ||
-    "http://10.0.2.2:8000"
+    // "http://10.0.2.2:8000"
+    "http://localhost:8000"
   );
 };
 

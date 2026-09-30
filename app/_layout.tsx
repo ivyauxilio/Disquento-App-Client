@@ -37,6 +37,26 @@ export default function RootLayout() {
             >
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="referrals"
+                options={{
+                  presentation: "card",
+                  animation: "slide_from_right",
+                }}
+              />
+              <Stack.Screen
+                name="wallet/withdraw"
+                options={{ animation: "slide_from_bottom" }} // ✅ nicer UX
+              />
+
+              {/* Referral */}
+              {/* <Stack.Screen
+                name="referrals/index"
+                options={{ animation: "slide_from_right" }}
+              /> */}
+              {/* <Stack.Screen name="wallet/transactions" /> */}
+              {/* <Stack.Screen name="wallet/withdraw" /> */}
+              <Stack.Screen name="notifications" />
             </Stack>
           </AuthGuard>
         </OnboardingCheck>

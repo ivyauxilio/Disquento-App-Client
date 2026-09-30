@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -28,6 +29,7 @@ export default function PromotionDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Generate QR code data
   const qrData = JSON.stringify({
@@ -190,17 +192,19 @@ export default function PromotionDetailScreen() {
   );
 
   const remainingUses = promotion?.usage_limit
-    ? promotion.total_usage_limit - (promotion?.used_count || 0)
+    ? promotion.usage_limit - (promotion?.used_count || 0)
     : "∞";
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <StatusBar style="dark" backgroundColor="#6C3DF5" />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        // refreshControl={
+        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        // }
+      >
+        {/* <ScrollView showsVerticalScrollIndicator={false}> */}
         {/* Header */}
         <View style={[styles.header, { flexDirection: "row" }]}>
           <TouchableOpacity
@@ -397,8 +401,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     backgroundColor: "#ffffff",
-    // height: 60,
-    paddingTop: 50,
+    height: 56,
+    // paddingTop: 50,
   },
   backButton: {
     padding: 4,

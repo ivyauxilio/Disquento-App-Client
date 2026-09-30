@@ -1,3 +1,5 @@
+import Sidebar from "@/components/Sidebar";
+import { fetchUnreadCount } from "@/store/slices/notificationSlice";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -16,6 +18,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import api from "../../api/axios";
 import { useAppSelector } from "../../store/hooks";
 import { colors } from "../../theme/colors";
@@ -82,6 +85,9 @@ const PROMO_TYPE_COLORS: Record<string, string> = {
 
 export default function ClientDashboard() {
   const router = useRouter();
+  const dispatch = useDispatch();
+  const { unreadCount } = useSelector((s: any) => s.notifications);
+
   const { user } = useAppSelector((state) => state.auth);
   const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [featuredDeals, setFeaturedDeals] = useState<Promotion[]>([]);
@@ -90,6 +96,19 @@ export default function ClientDashboard() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPromoType, setSelectedPromoType] = useState("all");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    // Fetch unread count on mount
+    dispatch(fetchUnreadCount() as any);
+
+    // Optional: poll every 30 seconds
+    const interval = setInterval(() => {
+      dispatch(fetchUnreadCount() as any);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [dispatch]);
 
   // Fetch promotions from API
   const fetchPromotions = async () => {
@@ -256,7 +275,7 @@ export default function ClientDashboard() {
   // Render promo type chip
   const renderPromoTypeChip = (type: (typeof PROMO_TYPES)[0]) => {
     const isActive = selectedPromoType === type.id;
-    const color = isActive ? colors.purple.main : "#6b7280";
+    const color = isActive ? "#ffff" : colors.purple.main;
 
     return (
       <TouchableOpacity
@@ -308,23 +327,36 @@ export default function ClientDashboard() {
               <Text style={styles.cardImagePlaceholderText}>🛍️</Text>
             </View>
           )} */}
-          {item.poster_thumbnail || item.poster_image ? (
+          {/* {item.poster_thumbnail || item.poster_image ? (
             <Image
               source={imageUrl ? { uri: imageUrl } : undefined}
               style={styles.cardImage}
               resizeMode="cover"
-            />
+            />  
           ) : (
             <View style={styles.cardImagePlaceholder}>
               <Text style={styles.cardImagePlaceholderText}>🛍️</Text>
             </View>
+          )} */}
+
+          {item.poster_thumbnail || item.poster_image ? (
+            <Image
+              source={{ uri: item.poster_thumbnail || item.poster_image }}
+              style={styles.cardImage}
+              resizeMode="cover"
+            />
+          ) : (
+            <View style={styles.featuredImagePlaceholder}>
+              <Text style={styles.featuredImagePlaceholderText}>🛍️</Text>
+            </View>
           )}
+
           <View style={[styles.discountBadge, { backgroundColor: typeColor }]}>
             <Text style={styles.discountBadgeText}>{item.discount_text}</Text>
           </View>
           {item.is_verified && (
             <View style={styles.verifiedBadge}>
-              <Ionicons name="checkmark-circle" size={14} color="#fff" />
+              <Ionicons name="checkmark-circle" size={14} color="#0cc234" />
               <Text style={styles.verifiedBadgeText}>VERIFIED</Text>
             </View>
           )}
@@ -430,100 +462,132 @@ export default function ClientDashboard() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <StatusBar style="inverted" backgroundColor="#6C3DF5" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>
-              Hey, {user?.firstname || "Shopper"} 👋
-            </Text>
-            <Text style={styles.location}>New York City</Text>
-          </View>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons name="notifications-outline" size={24} color="#1f2937" />
-            <View style={styles.notificationDot} />
-          </TouchableOpacity>
-        </View>
-
-        {/* Search Bar */}
-        <View style={styles.searchContainer}>
-          <Ionicons
-            name="search"
-            size={20}
-            color="#9ca3af"
-            style={styles.searchIcon}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search for deals, brands..."
-            placeholderTextColor="#9ca3af"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-
-        {/* Featured Deals */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Featured Deals</Text>
-          <TouchableOpacity>
-            <Text style={styles.viewAllText}>View All</Text>
-          </TouchableOpacity>
-        </View>
-
-        {featuredDeals.length > 0 && (
-          <FlatList
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            data={featuredDeals}
-            renderItem={renderFeaturedDeal}
-            keyExtractor={(item) => item.promotion_id}
-            contentContainerStyle={styles.featuredList}
-            style={styles.featuredFlatList}
-          />
-        )}
-
-        {/* Promo Type Filters */}
-        <View style={styles.promoTypesContainer}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.promoTypesScroll}
-          >
-            {PROMO_TYPES.map(renderPromoTypeChip)}
-          </ScrollView>
-        </View>
-
-        {/* Nearby Offers */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Nearby Offers</Text>
-          <TouchableOpacity>
-            <Text style={styles.viewAllText}>View All</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Promotions Grid */}
-        <View style={styles.promotionsGrid}>
-          {filteredPromotions.length > 0 ? (
-            filteredPromotions.map((item) => (
-              <View key={item.promotion_id} style={styles.gridItemWrapper}>
-                {renderPromotionCard({ item })}
+    <>
+      <SafeAreaView style={styles.container} edges={["top"]}>
+        <StatusBar style="inverted" backgroundColor="#6C3DF5" />
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            {/* ✅ Make greeting area tappable to open sidebar */}
+            <TouchableOpacity
+              style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+              onPress={() => setSidebarOpen(true)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.miniAvatar}>
+                <Text style={styles.miniAvatarText}>
+                  {(user?.firstname?.[0] || "U").toUpperCase()}
+                </Text>
               </View>
-            ))
-          ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyStateText}>No deals found</Text>
-            </View>
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.greeting}>
+                  Hey, {user?.firstname || "Shopper"} 👋
+                </Text>
+                {/* <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <Ionicons name="location-outline" size={12} color="#6b7280" />
+                  <Text style={styles.location}>New York City</Text>
+                </View> */}
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.notificationButton}
+              onPress={() => router.push("/notifications")} // Navigate
+            >
+              <Ionicons
+                name="notifications-outline"
+                size={24}
+                color="#1f2937"
+              />
+              {unreadCount > 0 && (
+                <View style={styles.notificationBadge}>
+                  <Text style={styles.notificationBadgeText}>
+                    {unreadCount > 99 ? "99+" : unreadCount}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          {/* Search Bar */}
+          <View style={styles.searchContainer}>
+            <Ionicons
+              name="search"
+              size={20}
+              color="#9ca3af"
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search for deals, brands..."
+              placeholderTextColor="#9ca3af"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+          </View>
+
+          {/* Featured Deals */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Featured Deals</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
+          </View>
+
+          {featuredDeals.length > 0 && (
+            <FlatList
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              data={featuredDeals}
+              renderItem={renderFeaturedDeal}
+              keyExtractor={(item) => item.promotion_id}
+              contentContainerStyle={styles.featuredList}
+              style={styles.featuredFlatList}
+            />
           )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+
+          {/* Promo Type Filters */}
+          <View style={styles.promoTypesContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.promoTypesScroll}
+            >
+              {PROMO_TYPES.map(renderPromoTypeChip)}
+            </ScrollView>
+          </View>
+
+          {/* Nearby Offers */}
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Nearby Offers</Text>
+            <TouchableOpacity>
+              <Text style={styles.viewAllText}>View All</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Promotions Grid */}
+          <View style={styles.promotionsGrid}>
+            {filteredPromotions.length > 0 ? (
+              filteredPromotions.map((item) => (
+                <View key={item.promotion_id} style={styles.gridItemWrapper}>
+                  {renderPromotionCard({ item })}
+                </View>
+              ))
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyStateText}>No deals found</Text>
+              </View>
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    </>
   );
 }
 
@@ -551,6 +615,19 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 12,
   },
+  miniAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#6C3DF5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  miniAvatarText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "700",
+  },
   greeting: {
     fontSize: 20,
     fontWeight: "700",
@@ -573,6 +650,25 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: "#ef4444",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: "#ef4444",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 5,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  notificationBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "800",
   },
   searchContainer: {
     flexDirection: "row",
