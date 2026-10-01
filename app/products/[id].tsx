@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getImageUrl } from "../../utils/image";
 
 export default function ProductDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -28,7 +29,7 @@ export default function ProductDetail() {
     (async () => {
       try {
         const res = await productAPI.show(id);
-        setProduct(res.data);
+        setProduct(res.data.product);
       } catch (e) {
         Alert.alert("Error", "Failed to load product");
       } finally {
@@ -53,6 +54,8 @@ export default function ProductDetail() {
     : price;
   const hasDiscount = discountedPrice < price;
 
+  const imageUrl = getImageUrl(product.image_url);
+
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <StatusBar style="dark" />
@@ -74,7 +77,10 @@ export default function ProductDetail() {
         {/* Image */}
         <View style={styles.imageWrap}>
           {product.image_url ? (
-            <Image source={{ uri: product.image_url }} style={styles.image} />
+            <Image
+              source={imageUrl ? { uri: imageUrl } : undefined}
+              style={styles.image}
+            />
           ) : (
             <View style={[styles.image, styles.imagePlaceholder]}>
               <Ionicons name="image-outline" size={80} color="#c4b5fd" />

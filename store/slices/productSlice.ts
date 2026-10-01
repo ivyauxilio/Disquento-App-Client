@@ -40,13 +40,13 @@ export const fetchProducts = createAsyncThunk(
         refresh: !!refresh,
       };
     } catch (e: any) {
-      console.log("========== PRODUCT API ERROR ==========");
-      console.log("STATUS:", e.response?.status);
+      // console.log("========== PRODUCT API ERROR ==========");
+      // console.log("STATUS:", e.response?.status);
       console.log("DATA:", JSON.stringify(e.response?.data, null, 2));
-      console.log("URL:", e.config?.url);
-      console.log("PARAMS:", e.config?.params);
-      console.log("MESSAGE:", e.message);
-      console.log("=======================================");
+      // console.log("URL:", e.config?.url);
+      // console.log("PARAMS:", e.config?.params);
+      // console.log("MESSAGE:", e.message);
+      // console.log("=======================================");
 
       return rejectWithValue(
         e.response?.data?.message || "Failed to load products",

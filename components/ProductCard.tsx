@@ -78,14 +78,16 @@ export default function ProductCard({
         <Text style={styles.name} numberOfLines={1}>
           {product.name}
         </Text>
-        <Text style={styles.unit} numberOfLines={1}>
-          {product.unit}
-          {product.brand ? ` • ${product.brand}` : ""}
-        </Text>
 
         <View style={styles.priceRow}>
           <View>
-            <Text style={styles.price}>₱{discountedPrice.toFixed(2)}</Text>
+            <View style={styles.priceRow}>
+              <Text style={styles.price}>₱{discountedPrice.toFixed(2)} </Text>
+              <Text style={styles.unit} numberOfLines={1}>
+                / {product.unit}
+                {product.brand ? ` • ${product.brand}` : ""}
+              </Text>
+            </View>
             {hasDiscount && (
               <Text style={styles.originalPrice}>₱{price.toFixed(2)}</Text>
             )}
