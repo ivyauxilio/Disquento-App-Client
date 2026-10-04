@@ -2,6 +2,7 @@
 
 import ProductCard from "@/components/ProductCard";
 import Sidebar from "@/components/Sidebar";
+import { selectCartCount } from "@/store/slices/cartSlice";
 import {
   fetchCategories,
   fetchProducts,
@@ -45,7 +46,8 @@ export default function GroceryTab() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [cartCount] = useState(3); // TODO: wire to cart slice
+  // const [cartCount] = useState(3); // TODO: wire to cart slice
+  const cartCount = useSelector(selectCartCount);
 
   // Debounce search
   useEffect(() => {
@@ -142,7 +144,7 @@ export default function GroceryTab() {
           </View>
 
           {/* Cart */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.iconBtn}
             // onPress={() => router.push("/cart")}
           >
@@ -150,6 +152,19 @@ export default function GroceryTab() {
             {cartCount > 0 && (
               <View style={styles.cartBadge}>
                 <Text style={styles.cartBadgeText}>{cartCount}</Text>
+              </View>
+            )}
+          </TouchableOpacity> */}
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => router.push("/cart")}
+          >
+            <Ionicons name="cart-outline" size={22} color="#111827" />
+            {cartCount > 0 && (
+              <View style={styles.cartBadge}>
+                <Text style={styles.cartBadgeText}>
+                  {cartCount > 99 ? "99+" : cartCount}
+                </Text>
               </View>
             )}
           </TouchableOpacity>
@@ -371,7 +386,7 @@ export default function GroceryTab() {
             <ProductCard
               product={item}
               onPress={() => goToProduct(item.product_id)}
-              onAdd={() => addToCart(item)}
+              // onAdd={() => addToCart(item)}
             />
           )}
           ListFooterComponent={

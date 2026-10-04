@@ -1,6 +1,7 @@
 // app/products/[id].tsx
 
 import { productAPI } from "@/api/products";
+import { selectCartCount } from "@/store/slices/cartSlice";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -16,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSelector } from "react-redux";
 import { getImageUrl } from "../../utils/image";
 
 export default function ProductDetail() {
@@ -24,6 +26,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
+  const cartCount = useSelector(selectCartCount);
 
   useEffect(() => {
     (async () => {
@@ -68,6 +71,21 @@ export default function ProductDetail() {
         <Text style={styles.headerTitle} numberOfLines={1}>
           {product.name}
         </Text>
+
+        <TouchableOpacity
+          style={styles.iconBtn}
+          onPress={() => router.push("/cart")}
+        >
+          <Ionicons name="cart-outline" size={22} color="#111827" />
+          {cartCount > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>
+                {cartCount > 99 ? "99+" : cartCount}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.iconBtn}>
           <Ionicons name="heart-outline" size={22} color="#111827" />
         </TouchableOpacity>
@@ -89,7 +107,7 @@ export default function ProductDetail() {
           {hasDiscount && (
             <View style={styles.discountRibbon}>
               <Text style={styles.discountRibbonText}>
-                -{Math.round(((price - discountedPrice) / price) * 100)}% OFF
+                {Math.round(((price - discountedPrice) / price) * 100)}% OFF
               </Text>
             </View>
           )}
@@ -192,6 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingVertical: 12,
+    gap: 8,
   },
   iconBtn: {
     width: 40,
@@ -202,6 +221,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderWidth: 1,
     borderColor: "#e5e7eb",
+  },
+  cartBadge: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: "#ef4444",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  cartBadgeText: {
+    color: "#fff",
+    fontSize: 10,
+    fontWeight: "800",
   },
   headerTitle: {
     flex: 1,

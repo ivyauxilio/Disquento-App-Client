@@ -1,21 +1,33 @@
+import { addToCart, incrementQty } from "@/store/slices/cartSlice";
 import { getImageUrl } from "@/utils/image";
 import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
 import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 interface Props {
   product: any;
   onPress: () => void;
-  onAdd: () => void;
-  cartQty?: number;
+  // onAdd: () => void;
+  // cartQty?: number;
 }
 
 export default function ProductCard({
   product,
   onPress,
-  onAdd,
-  cartQty = 0,
+  // onAdd,
+  // cartQty = 0,
 }: Props) {
+  const dispatch = useDispatch();
+  const productId = product.product_id ?? product.id;
+
+  // ✅ Get qty from cart
+  const cartQty = useSelector(
+    (s: any) =>
+      s.cart.items.find((i: any) => i.product_id === productId)?.quantity ?? 0,
+  );
+
   const price = Number(product.price);
   const discountedPrice = product.discounted_price
     ? Number(product.discounted_price)
@@ -30,6 +42,19 @@ export default function ProductCard({
   const isOutOfStock = stock === 0;
 
   const imageUrl = getImageUrl(product.image_url);
+
+  const handleAdd = (e: any) => {
+    e?.stopPropagation?.();
+    if (isOutOfStock) return;
+
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    if (cartQty > 0) {
+      dispatch(incrementQty(productId));
+    } else {
+      dispatch(addToCart({ product, quantity: 1 }));
+    }
+  };
 
   return (
     <TouchableOpacity
@@ -94,9 +119,21 @@ export default function ProductCard({
           </View>
 
           {/* Add button */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.addBtn, isOutOfStock && styles.addBtnDisabled]}
             onPress={onAdd}
+            disabled={isOutOfStock}
+            activeOpacity={0.7}
+          >
+            {cartQty > 0 ? (
+              <Text style={styles.addBtnQty}>{cartQty}</Text>
+            ) : (
+              <Ionicons name="add" size={20} color="#fff" />
+            )}
+          </TouchableOpacity> */}
+          <TouchableOpacity
+            style={[styles.addBtn, isOutOfStock && styles.addBtnDisabled]}
+            onPress={handleAdd}
             disabled={isOutOfStock}
             activeOpacity={0.7}
           >

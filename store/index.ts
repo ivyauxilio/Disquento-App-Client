@@ -4,7 +4,9 @@ import { combineReducers } from "redux";
 import { persistReducer, persistStore } from "redux-persist";
 import { PersistPartial } from "redux-persist/es/persistReducer";
 import authReducer from "./slices/authSlice";
+import cartReducer from "./slices/cartSlice";
 import notificationReducer from "./slices/notificationSlice";
+import orderReducer from "./slices/orderSlice";
 import productReducer from "./slices/productSlice";
 import referralReducer from "./slices/referralSlice";
 import transactionReducer from "./slices/transactionSlice";
@@ -22,6 +24,8 @@ const rootReducer = combineReducers({
   transactions: transactionReducer,
   notifications: notificationReducer,
   products: productReducer,
+  cart: cartReducer,
+  orders: orderReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

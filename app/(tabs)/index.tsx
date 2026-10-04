@@ -239,9 +239,10 @@ export default function ClientDashboard() {
   const getDiscountText = (item: any): string => {
     switch (item.promo_type) {
       case "percentage":
-        return `${item.value}% OFF`;
+        return `${Number(item.value).toFixed(0)}% OFF`;
       case "fixed":
-        return `₱${item.value} OFF`;
+        // return `₱${item.value} OFF`;
+        return `₱${Number(item.value).toFixed(0)} OFF`;
       case "bogo":
         return "Buy 1 Get 1";
       case "free_gift":
@@ -249,7 +250,7 @@ export default function ClientDashboard() {
       case "free_shipping":
         return "Free Shipping";
       default:
-        return `${item.value}% OFF`;
+        return `${Number(item.value).toFixed(0)}% OFF`;
     }
   };
 

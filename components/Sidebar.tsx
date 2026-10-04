@@ -62,6 +62,7 @@ const menuItems = [
     icon: "receipt-outline",
     route: "/orders",
   },
+  { label: "My Cart", icon: "cart-outline", route: "/cart" },
 ];
 
 const secondaryItems = [
