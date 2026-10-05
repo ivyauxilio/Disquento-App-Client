@@ -16,8 +16,9 @@ const getApiUrl = () => {
   // You can set this based on environment
   // For now, using Android emulator URL
   // return "http://10.0.2.2:8000/api";
-  return "http://localhost:8000/api";
+  // return "http://localhost:8000/api";
   // return "http://192.168.68.11:8000/api";
+  return "https://console.klickcard.ph/api";
 };
 
 const API_URL = getApiUrl();

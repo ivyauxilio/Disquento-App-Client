@@ -8,6 +8,7 @@ import cartReducer from "./slices/cartSlice";
 import notificationReducer from "./slices/notificationSlice";
 import orderReducer from "./slices/orderSlice";
 import productReducer from "./slices/productSlice";
+import profileReducer from "./slices/profileSlice";
 import referralReducer from "./slices/referralSlice";
 import transactionReducer from "./slices/transactionSlice";
 
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   products: productReducer,
   cart: cartReducer,
   orders: orderReducer,
+  profile: profileReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
